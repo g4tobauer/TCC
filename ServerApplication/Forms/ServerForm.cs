@@ -51,12 +51,10 @@ namespace ServerApplication.Forms
         {
             return int.TryParse(txt_ServerPort.Text, out serverPort);
         }
-
         public void DefiniTexto(string texto)
         {
             log = texto;
         }
-
         #endregion
 
         #region PrivateMethods
