@@ -144,7 +144,7 @@ namespace ServerApplication.Classes
                 {
                     _lstUdpState.Add(UdpState);
                 }
-                //ServerForm.DefiniTexto(returnData);
+                ServerForm.DefiniTexto(returnData);
 
                 UdpState UdpStateTeste = new UdpState();
                 UdpStateTeste.IPEndPoint = IPEndPoint;

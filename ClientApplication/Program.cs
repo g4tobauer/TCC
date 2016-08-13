@@ -17,9 +17,9 @@ namespace ClientApplication
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            new System.Threading.Thread(abrirServer).Start();
+            new System.Threading.Thread(abrirClient).Start();
         }
-        static void abrirServer()
+        static void abrirClient()
         {
             Application.Run(new Forms.ClientForm());
         }

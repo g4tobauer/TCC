@@ -65,9 +65,6 @@ namespace ClientApplication.Classes
         {
             if (t1 == null)
             {
-                //t1 = new Thread(ClientConection.Receive);
-                //t1.Start();
-
                 GameInstance.opCode = Operation.Join;
                 var json = JsonConvert.SerializeObject(GameInstance);
                 ClientConection.send(json);
@@ -102,13 +99,15 @@ namespace ClientApplication.Classes
 
         #region Nao Pronto
 
+        private int window;
+
         private void InitGL()
         {
             // create an OpenGL window
             Glut.glutInit();
             Glut.glutInitDisplayMode(Glut.GLUT_DOUBLE | Glut.GLUT_DEPTH);
             Glut.glutInitWindowSize(width, height);
-            Glut.glutCreateWindow("OpenGL Tutorial");
+            window = Glut.glutCreateWindow("OpenGL Tutorial");
 
             // provide the Glut callbacks that are necessary for running this tutorial
             Glut.glutIdleFunc(OnRenderFrame);
@@ -130,11 +129,11 @@ namespace ClientApplication.Classes
         }
         private void SenderUpdate()
         {
-            //Thread.Sleep(10);
             GameInstance.opCode = Operation.Update;
             var json = JsonConvert.SerializeObject(GameInstance);
             ClientConection.send(json);
         }
+
         private void Exit()
         {
             if (_UpdateLoop || _ReceiveLoop)
@@ -157,17 +156,19 @@ namespace ClientApplication.Classes
         private void OnClose()
         {
             Exit();
-            // dispose of all of the resources that were created
             program.DisposeChildren = true;
             program.Dispose();
             foreach (var lst in lstPlayerRenderContainer)
             {
                 lst.Dispose();
             }
-
             ClientConection.Close();
         }
-
+        public void Close()
+        {
+            OnClose();
+            Glut.glutDestroyWindow(window);
+        }
         private void OnRenderFrame()
         {
             // set up the OpenGL viewport and clear both the color and depth bits

@@ -27,13 +27,13 @@ namespace ClientApplication.Forms
         private void InitThings()
         {
             InitializeComponent();
-            Client = new Client(this);
             isCreated = false;
             isPlayed = false;
         }
 
         private void btn_Connect_Click(object sender, EventArgs e)
         {
+            Client = new Client(this);
             _clientOpenGLScreen = new ClientOpenGLScreen(Client);
             if (!isCreated)
             {
@@ -95,7 +95,7 @@ namespace ClientApplication.Forms
 
         private void btn_Disconnect_Click(object sender, EventArgs e)
         {
-            Client.Close();
+            _clientOpenGLScreen.Close();
         }
     }
 }

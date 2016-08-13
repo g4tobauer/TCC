@@ -9,15 +9,18 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using ServerApplication.Classes;
+using System.Threading;
 
 namespace ServerApplication.Forms
 {
     public partial class ServerForm : Form
     {
         #region Proprierties
+        Thread ThreadLog;
         private Server Server;
+        private string log;
+        private bool isPrintingLog;
         #endregion Proprierties
-
 
         public ServerForm()
         {
@@ -29,14 +32,17 @@ namespace ServerApplication.Forms
         private void btn_Start_Click(object sender, EventArgs e)
         {
             Server.Start();
+            ThreadLog = new Thread(Print);
+            isPrintingLog = true;
+            ThreadLog.Start();
         }
         private void btn_ShutDown_Click(object sender, EventArgs e)
         {
-            Server.ShutDown();
+            ShutDown();
         }
         private void ServerForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Server.ShutDown();
+            ShutDown();
         }
         #endregion
 
@@ -48,23 +54,41 @@ namespace ServerApplication.Forms
 
         public void DefiniTexto(string texto)
         {
-            if (this.txt_Resposta.InvokeRequired)
-            {
-                SetTextCallBack d = new SetTextCallBack(DefinirTexto);
-                this.Invoke(d, new object[] { texto });
-            }
+            log = texto;
         }
+
         #endregion
 
         #region PrivateMethods
-        private void DefinirTexto(string texto)
+        private void DefinirTexto()
         {
-            if (!string.IsNullOrEmpty(texto))
-                this.txt_Resposta.AppendText(texto + "\n");
+            //if (!string.IsNullOrEmpty(log))
+            this.txt_Resposta.AppendText(log + "\n");
+        }
+        private void Print()
+        {
+            while (isPrintingLog)
+            {
+                Thread.Sleep(100);
+                if (this.txt_Resposta.InvokeRequired)
+                {
+                    SetTextCallBack d = new SetTextCallBack(DefinirTexto);
+                    this.Invoke(d);
+                }
+            }
+            log = string.Empty;
+            DefinirTexto();
+        }
+        private void ShutDown()
+        {
+            isPrintingLog = false;
+            Server.ShutDown();
+            if (ThreadLog != null)
+                ThreadLog.Abort();
         }
         #endregion
 
-        delegate void SetTextCallBack(string teste);
+        delegate void SetTextCallBack();
 
     }
 }
