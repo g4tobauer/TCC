@@ -58,19 +58,19 @@ namespace ClientApplication.Classes
         }
         #endregion
         #region RECEIVE
-        //public void Receive()
-        //{
-        //    IsConnected = true;
-        //    while (IsConnected)
-        //    {
-        //        byte[] b = new byte[1024];
-        //        Socket.Receive(b);
-        //        string str = Encoding.ASCII.GetString(b, 0, b.Length);
-        //        str = str.Trim('\0');
-        //        //ClientForm.DefiniTexto(str);
-        //        Console.WriteLine(str);
-        //    }
-        //}
+        public void Receive()
+        {
+            IsConnected = true;
+            while (IsConnected)
+            {
+                byte[] b = new byte[1024];
+                Socket.Receive(b);
+                string str = Encoding.ASCII.GetString(b, 0, b.Length);
+                str = str.Trim('\0');
+                //ClientForm.DefiniTexto(str);
+                Console.WriteLine(str);
+            }
+        }
         public void Close()
         {
             try

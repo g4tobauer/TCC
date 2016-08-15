@@ -1,6 +1,7 @@
 ﻿//using ClientApplication.Common;
 using CommonData;
 using Newtonsoft.Json;
+using ServerApplication.Classes.MULTICAST;
 using ServerApplication.Classes.UDP;
 using System;
 using System.Collections.Generic;
@@ -15,24 +16,19 @@ namespace ServerApplication.Classes
 {
     class Server
     {
-        #region
+        #region TESTE
         #endregion
 
         #region Proprierties
+        private UdpReceive Receiver;
+        private MulticastSender Sender;
         private Dictionary<string, UdpState> _dicUdpState;
         private Forms.ServerForm ServerForm;
-
         private List<UdpState> _lstUdpState;
-
-        private Map _map;
-        
+        private Map _map;        
         private bool IsOK;
-        public string Result { get; set; }
         #endregion
 
-        #region TESTE
-        UdpReceive Receiver;
-        #endregion
 
         public Server(Forms.ServerForm Form)
         {
@@ -42,10 +38,10 @@ namespace ServerApplication.Classes
             {
                 _lstUdpState = new List<UdpState>();
                 Receiver = new UdpReceive(ref _lstUdpState, new IPEndPoint(IPAddress.Any, serverPort));
+                Sender = new MulticastSender();
 
                 _dicUdpState = new Dictionary<string, UdpState>();
                 _map = new Map();
-                Result = string.Empty;
                 IsOK = true;
             }
         }
@@ -66,70 +62,6 @@ namespace ServerApplication.Classes
         #endregion
 
         #region PrivateMethods
-        #region SEND
-        private void Send()
-        {
-            using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp))
-            {
-                IPAddress ip = IPAddress.Parse("224.5.6.7");
-                try
-                {
-                    socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(ip));
-                    socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastTimeToLive, 2);
-                    IPEndPoint ipep = new IPEndPoint(ip, 4567);
-
-                    socket.Connect(ipep);
-                    Byte[] sendBytes;
-
-                    while (Receiver.IsRunning)
-                    {
-                        lock (Result)
-                        {
-                            sendBytes = Encoding.ASCII.GetBytes(Result);
-                            socket.Send(sendBytes, sendBytes.Length, SocketFlags.None);
-                        }
-
-                        Thread.Sleep(10);
-                    }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.StackTrace);
-                }
-            }
-        }
-        private void Send2()
-        {
-            using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp))
-            {
-                IPAddress ip = IPAddress.Parse("224.5.6.7");
-                try
-                {
-                    socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(ip));
-                    socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastTimeToLive, 2);
-                    IPEndPoint ipep = new IPEndPoint(ip, 4568);
-
-                    socket.Connect(ipep);
-                    Byte[] sendBytes;
-
-                    while (Receiver.IsRunning)
-                    {
-                        lock (Result)
-                        {
-                            sendBytes = Encoding.ASCII.GetBytes(Result);
-                            socket.Send(sendBytes, sendBytes.Length, SocketFlags.None);
-                        }
-
-                        Thread.Sleep(10);
-                    }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.StackTrace);
-                }
-            }
-        }
-        #endregion
         private void StartThreads()
         {
             Thread ThreadReceive = new Thread(Receiver.BeginReceive);
@@ -141,11 +73,10 @@ namespace ServerApplication.Classes
             Thread ThreadUpdateList = new Thread(UpdateList);
             ThreadUpdateList.Start();
 
-            Thread ThreadSend2 = new Thread(Send2);
-            Thread ThreadSend = new Thread(Send);
-            ThreadSend2.Start();
+            Thread ThreadSend = new Thread(Sender.Run);
             ThreadSend.Start();
         }
+
         private void UpdateUdpState()
         {
             while (Receiver.IsRunning)
@@ -209,9 +140,9 @@ namespace ServerApplication.Classes
                     json = JsonConvert.SerializeObject(_map);
                 }
 
-                lock (Result)
+                lock (Sender.Message)
                 {
-                    Result = json;
+                    Sender.Message = json;
                 }
             }
         }

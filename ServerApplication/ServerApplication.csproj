@@ -53,6 +53,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\MULTICAST\MulticastSender.cs" />
     <Compile Include="Classes\Server.cs" />
     <Compile Include="Classes\UdpState.cs" />
     <Compile Include="Classes\UDP\UdpReceive.cs" />
@@ -80,7 +81,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Classes\MULTICAST\" />
     <Folder Include="Classes\TCP\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

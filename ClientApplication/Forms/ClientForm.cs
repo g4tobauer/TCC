@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ClientApplication.Classes;
+using System.Threading;
 
 namespace ClientApplication.Forms
 {
@@ -62,6 +63,7 @@ namespace ClientApplication.Forms
                                     _clientOpenGLScreen.QuadPlayer(playerName);
                                     break;
                             }
+                            new Thread(Client.Receive).Start();
                             isCreated = true;
                             break;
                         }
