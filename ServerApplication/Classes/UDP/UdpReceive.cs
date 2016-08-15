@@ -19,6 +19,7 @@ namespace ServerApplication.Classes.UDP
 
         public UdpReceive(ref List<UdpState> lstUdpState, IPEndPoint IPEndPoint)
         {
+            this.IPEndPoint = IPEndPoint;
             _lstUdpState = lstUdpState;
         }
 
@@ -38,7 +39,8 @@ namespace ServerApplication.Classes.UDP
 
                 lock (_lstUdpState)
                 {
-                    _lstUdpState.Add(UdpState);
+                    if(_lstUdpState.Count < 15)
+                        _lstUdpState.Add(UdpState);
                 }
                 //ServerForm.DefiniTexto(returnData);
 

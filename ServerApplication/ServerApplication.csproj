@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="Classes\Server.cs" />
     <Compile Include="Classes\UdpState.cs" />
+    <Compile Include="Classes\UDP\UdpReceive.cs" />
     <Compile Include="Forms\ServerForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -77,6 +78,10 @@
       <Project>{25f5ca80-28b7-49c7-bc0a-948ea6f5ecd2}</Project>
       <Name>CommonData</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Classes\MULTICAST\" />
+    <Folder Include="Classes\TCP\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
