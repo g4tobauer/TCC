@@ -1,0 +1,23 @@
+Tive a idéia de fazer um jogo para o meu tcc e comecei a estudar alguns motores graficos, como a Unity3d e 
+Unreal Engine.
+
+Aprendi muita coisa em ambas ferramentas, porém eu sempre quis realmente saber como era feito um jogo desde o 
+inicio.
+
+Minha intensão no inicio, era fazer um jogo multiplayer na UnrealEngine, estava indo bem, porém como não tinha 
+maquinas suficientes que comportassem o poder do motor grafico, acabei indo atraz de alternativas que iam
+mais de encontro com aquilo que eu realmente queria, que era realmente saber como as coisas funcionam.
+Como era renderizado, oque precisava ser feito para desenhar um simples cubo na tela e coisas do tipo.
+Procurei saber um pouco mais sobre opengl, e vi alguns videos que me tiraram várias duvidas e me deram a idéia
+de fazer este projeto.
+
+Meu projeto consiste em desenhar 2 estruturas simples na tela, cada uma representando um player, que se conectam
+em um servidor que fica responsavel por receber os dados e reenviar para todos os que estiverem conectados nele 
+representando de fato um ambiente multiplayer.
+
+Inicialmente, comecei pela linguagem java, pois é a linguagem que eu tenho mais intimidade. Enfrentei algumas
+dificuldades e interrompi o projeto algumas vezes. Aprendi muito sobre sockets, e threads nesse tempo.
+No meio desse processo, tentei voltar a fazer um jogo mais simples usando a Unreal Engine, porém isso não estava
+me deixando contente.
+
+Como estava começando a mexer em C# no meu serviço, me animei novamente em fazer esse meu projeto nessa linguagem.
