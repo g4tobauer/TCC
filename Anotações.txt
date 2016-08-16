@@ -20,4 +20,5 @@ dificuldades e interrompi o projeto algumas vezes. Aprendi muito sobre sockets, 
 No meio desse processo, tentei voltar a fazer um jogo mais simples usando a Unreal Engine, porém isso não estava
 me deixando contente.
 
-Como estava começando a mexer em C# no meu serviço, me animei novamente em fazer esse meu projeto nessa linguagem.
+Como estava começando a mexer com C# no meu serviço, me animei novamente em fazer esse meu projeto nessa linguagem.
+
