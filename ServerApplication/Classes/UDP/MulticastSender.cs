@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ServerApplication.Classes.MULTICAST
+namespace ServerApplication.Classes.UDP
 {
     class MulticastSender
     {
