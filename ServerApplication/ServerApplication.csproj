@@ -53,6 +53,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\TCP\TcpServer.cs" />
     <Compile Include="Classes\UDP\MulticastSender.cs" />
     <Compile Include="Classes\Server.cs" />
     <Compile Include="Classes\UdpState.cs" />
@@ -80,9 +81,7 @@
       <Name>CommonData</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Classes\TCP\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
