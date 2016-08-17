@@ -15,9 +15,13 @@ namespace ServerApplication.Classes.UDP
         public bool IsRunning { get; set; }
         public string Message { get; set; }
 
-        public void Run()
+        public MulticastSender()
         {
             Message = string.Empty;
+        }
+
+        public void Run()
+        {
             IsRunning = true;
             Send();
         }

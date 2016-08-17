@@ -46,12 +46,14 @@ namespace ServerApplication.Classes
         }
 
         #region PublicMethods
-        public void Start()
+        public bool Start()
         {
             if (IsOK && !Receiver.IsRunning)
             {
                 StartThreads();
+                return true;
             }
+            return false;
         }
         public void ShutDown()
         {

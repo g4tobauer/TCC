@@ -31,10 +31,12 @@ namespace ServerApplication.Forms
         #region EventMethods
         private void btn_Start_Click(object sender, EventArgs e)
         {
-            Server.Start();
-            ThreadLog = new Thread(Print);
-            isPrintingLog = true;
-            ThreadLog.Start();
+            if (Server.Start())
+            {
+                ThreadLog = new Thread(Print);
+                isPrintingLog = true;
+                ThreadLog.Start();
+            }
         }
         private void btn_ShutDown_Click(object sender, EventArgs e)
         {
