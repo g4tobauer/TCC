@@ -34,6 +34,7 @@ namespace ClientApplication.Classes.TCP
         private bool Connect(string message)
         {
             string output = "";
+            var result = false;
 
             try
             {
@@ -66,25 +67,37 @@ namespace ClientApplication.Classes.TCP
                 // Read the first batch of the TcpServer response bytes.
                 Int32 bytes = stream.Read(data, 0, data.Length);
                 responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
-                output = "Received: " + responseData;
-                Console.WriteLine(output);
 
+                switch (responseData)
+                {
+                    case "Connectado":
+                        result = true;
+                        break;
+                    case "Desconnectado":
+                        result = true;
+                        break;
+                    default:
+                        result = false;
+                        break;
+                }
                 // Close everything.
                 stream.Close();
                 client.Close();
             }
             catch (ArgumentNullException e)
             {
+                result = false;
                 output = "ArgumentNullException: " + e;
                 Console.WriteLine(output);
             }
             catch (SocketException e)
             {
+                result = false;
                 output = "SocketException: " + e.ToString();
                 Console.WriteLine(output);
             }
 
-            return true;
+            return result;
         }
     }
 }

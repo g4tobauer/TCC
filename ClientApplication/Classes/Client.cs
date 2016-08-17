@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ClientApplication.Classes
@@ -21,7 +22,6 @@ namespace ClientApplication.Classes
         private int SENDPORT;
         private int LOCALPORT;
         private int MULTICASTPORT;
-        private Forms.ClientForm ClientForm;
         private bool IsConnected;
         private Socket Socket;
 
@@ -29,11 +29,6 @@ namespace ClientApplication.Classes
 
         private TcpClientConnection TcpClientConnection;
         #endregion
-
-        public Client(Forms.ClientForm Form)
-        {
-            ClientForm = Form;
-        }
 
         public void CreateConnection(string serverIP, int serverPort, int localPort, int multicastPort)
         {
@@ -75,7 +70,6 @@ namespace ClientApplication.Classes
                 Socket.Receive(b);
                 string str = Encoding.ASCII.GetString(b, 0, b.Length);
                 str = str.Trim('\0');
-                //ClientForm.DefiniTexto(str);
                 Console.WriteLine(str);
             }
         }
@@ -83,6 +77,8 @@ namespace ClientApplication.Classes
         {
             try
             {
+                IsConnected = false;
+                Thread.Sleep(100);
                 Socket.Close();
             }catch(Exception e)
             {

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using ClientApplication.Classes;
 using System.Threading;
+using CommonData;
 
 namespace ClientApplication.Forms
 {
@@ -16,10 +17,12 @@ namespace ClientApplication.Forms
     {
         #region
         private Client Client;
+        private GameInstance GameInstance;
         private ClientOpenGLScreen _clientOpenGLScreen;
         private bool isCreated;
         private bool isPlayed;
         #endregion
+
         public ClientForm()
         {
             InitThings();
@@ -34,8 +37,7 @@ namespace ClientApplication.Forms
 
         private void btn_Connect_Click(object sender, EventArgs e)
         {
-            Client = new Client(this);
-            _clientOpenGLScreen = new ClientOpenGLScreen(Client);
+            Client = new Client();
             if (!isCreated)
             {
                 var playerName = txt_Name.Text;
@@ -56,15 +58,26 @@ namespace ClientApplication.Forms
                             {
                                 case "Triangulo":
                                     Client.CreateConnection(serverIp, serverPort, localSenderPort, receiverPort);
-                                    _clientOpenGLScreen.TrianglePlayer(playerName);
+                                    GameInstance = TrianglePlayerToGameInstance(playerName);
                                     break;
                                 case "Quadrado":
                                     Client.CreateConnection(serverIp, serverPort, localSenderPort, receiverPort);
-                                    _clientOpenGLScreen.QuadPlayer(playerName);
+                                    GameInstance = QuadPlayerToGameInstance(playerName);
                                     break;
                             }
-                            new Thread(Client.Receive).Start();
-                            isCreated = true;
+
+                            if (Client.Join(GameInstance))
+                            {
+                                new Thread(Client.Receive).Start();
+                                _clientOpenGLScreen = new ClientOpenGLScreen(Client);
+                                _clientOpenGLScreen.MakeGameInstance(GameInstance);
+                                _clientOpenGLScreen.AddGameInstanceToList(GameInstance);
+                                isCreated = true;
+                            }
+                            else
+                            {
+                                Client.Close();
+                            }
                             break;
                         }
                     }
@@ -77,23 +90,23 @@ namespace ClientApplication.Forms
             }
         }
 
-        delegate void SetTextCallBack(string texto);
-        private void DefinirTexto(string texto)
+        private Player MakeQuadPlayer(string playerName)
         {
-            this.txt_Log.Text = texto;
+            return new Player(MeshType.Quad, playerName);
         }
-        public void DefiniTexto(string texto)
+        private Player MakeTrianglePlayer(string playerName)
         {
-            if (!(string.IsNullOrEmpty(texto)))
-            {
-                if (this.txt_Log.InvokeRequired)
-                {
-                    SetTextCallBack d = new SetTextCallBack(DefinirTexto);
-                    this.Invoke(d, new object[] { texto });
-                }
-            }
+            return new Player(MeshType.Triangle, playerName);
         }
 
+        public GameInstance QuadPlayerToGameInstance(string playerName)
+        {
+            return new GameInstance { Player = MakeQuadPlayer(playerName) };
+        }
+        public GameInstance TrianglePlayerToGameInstance(string playerName)
+        {
+            return new GameInstance { Player = MakeTrianglePlayer(playerName) };
+        }
 
         private void btn_Disconnect_Click(object sender, EventArgs e)
         {

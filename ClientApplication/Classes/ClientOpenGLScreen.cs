@@ -17,164 +17,105 @@ namespace ClientApplication.Classes
     {
         private float x = 0, y = 0;
         private bool left, right, up, down;
-        private int width = 1280, height = 720;
+        private const int Width = 1280;
+        private const int Height = 720;
         private ShaderProgram program;
-        List<PlayerRenderContainer> lstPlayerRenderContainer;
-        private static System.Diagnostics.Stopwatch watch;
-        private Client ClientConection;
+        private List<PlayerRenderContainer> lstPlayerRenderContainer;
         private GameInstance GameInstance;
-        
+        private static System.Diagnostics.Stopwatch watch;
+        private readonly Client ClientConection;
+        private int window;
+        private bool _UpdateLoop;
+
         public ClientOpenGLScreen(Client Client)
         {
             ClientConection = Client;
             InitGL();
         }
 
-
-        private Thread t1;
-        private bool _UpdateLoop;
-        private bool _ReceiveLoop;
-
-
         #region prontos
-        private Player MakeQuadPlayer(string playerName)
+        public void MakeGameInstance(GameInstance GameInstance)
         {
-            return new Player(MeshType.Quad, playerName);
+            this.GameInstance = GameInstance;
         }
-        private Player MakeTrianglePlayer(string playerName)
+        public void AddGameInstanceToList(GameInstance GameInstance)
         {
-            return new Player(MeshType.Triangle, playerName);
+            lstPlayerRenderContainer.Add(new PlayerRenderContainer(this.GameInstance.Player));
         }
-
-        public void QuadPlayer(string playerName)
-        {
-            GameInstance = new GameInstance();
-            GameInstance.Player = MakeQuadPlayer(playerName);
-            if (ClientConection.Join(GameInstance))
-                lstPlayerRenderContainer.Add(new PlayerRenderContainer(GameInstance.Player));                
-            //Join();
-        }
-        public void TrianglePlayer(string playerName)
-        {
-            GameInstance = new GameInstance();
-            GameInstance.Player = MakeTrianglePlayer(playerName);
-            if(ClientConection.Join(GameInstance))
-                lstPlayerRenderContainer.Add(new PlayerRenderContainer(GameInstance.Player));
-            //Join();
-        }
-
-        public void Join()
-        {
-            if (t1 == null)
-            {
-                GameInstance.opCode = Operation.Join;
-                var json = JsonConvert.SerializeObject(GameInstance);
-                ClientConection.send(json);
-            }
-        }
-
         public void MainLoop()
         {
             _UpdateLoop = true;
             Glut.glutMainLoop();
-        }
-
-        private void OnKeyboardDown(byte key, int x, int y)
-        {
-            if (key == 'w') up = true;
-            else if (key == 's') down = true;
-            else if (key == 'd') right = true;
-            else if (key == 'a') left = true;
-            else if (key == 27) Glut.glutLeaveMainLoop();
-        }
-
-        private void OnKeyboardUp(byte key, int x, int y)
-        {
-            if (key == 'w') up = false;
-            else if (key == 's') down = false;
-            else if (key == 'd') right = false;
-            else if (key == 'a') left = false;
-        }
-
-        private void OnDisplay() { }
-        #endregion
-
-        #region Nao Pronto
-
-        private int window;
-
-        private void InitGL()
-        {
-            // create an OpenGL window
-            Glut.glutInit();
-            Glut.glutInitDisplayMode(Glut.GLUT_DOUBLE | Glut.GLUT_DEPTH);
-            Glut.glutInitWindowSize(width, height);
-            window = Glut.glutCreateWindow("OpenGL Tutorial");
-
-            // provide the Glut callbacks that are necessary for running this tutorial
-            Glut.glutIdleFunc(OnRenderFrame);
-            Glut.glutDisplayFunc(OnDisplay);
-            Glut.glutKeyboardFunc(OnKeyboardDown);
-            Glut.glutKeyboardUpFunc(OnKeyboardUp);
-            Glut.glutCloseFunc(OnClose);
-
-            // compile the shader program
-            program = new ShaderProgram(VertexShader, FragmentShader);
-
-            // set the view and projection matrix, which are static throughout this tutorial
-            program.Use();
-            program["projection_matrix"].SetValue(Matrix4.CreatePerspectiveFieldOfView(0.45f, (float)width / height, 0.1f, 1000f));
-            program["view_matrix"].SetValue(Matrix4.LookAt(new Vector3(0, 0, 10), Vector3.Zero, Vector3.Up));
-            watch = System.Diagnostics.Stopwatch.StartNew();
-
-            lstPlayerRenderContainer = new List<PlayerRenderContainer>();
-        }
-        private void SenderUpdate()
-        {
-            GameInstance.opCode = Operation.Update;
-            var json = JsonConvert.SerializeObject(GameInstance);
-            ClientConection.send(json);
-        }
-
-        private void Exit()
-        {
-            if (_UpdateLoop || _ReceiveLoop)
-            {
-                _UpdateLoop = false;
-                _ReceiveLoop = false;
-
-                GameInstance.opCode = Operation.Exit;
-                var json = JsonConvert.SerializeObject(GameInstance);
-                ClientConection.send(json);
-
-                if (t1 != null && t1.IsAlive)
-                    t1.Abort();
-
-                t1 = null;
-
-                ClientConection.Close();
-            }
-        }
-        private void OnClose()
-        {
-            Exit();
-            program.DisposeChildren = true;
-            program.Dispose();
-            foreach (var lst in lstPlayerRenderContainer)
-            {
-                lst.Dispose();
-            }
-            ClientConection.Close();
         }
         public void Close()
         {
             OnClose();
             Glut.glutDestroyWindow(window);
         }
+
+        private void SenderUpdate()
+        {
+            GameInstance.opCode = Operation.Update;
+            var json = JsonConvert.SerializeObject(GameInstance);
+            ClientConection.send(json);
+        }
+        private void Exit()
+        {
+            if (_UpdateLoop)
+            {
+                if (ClientConection.Exit(GameInstance))
+                {
+                    _UpdateLoop = false;
+                    ClientConection.Close();
+                }
+            }
+        }
+        #endregion
+
+        #region Initialization
+        private void InitWindow()
+        {
+            // create an OpenGL window
+            Glut.glutInit();
+            Glut.glutInitDisplayMode(Glut.GLUT_DOUBLE | Glut.GLUT_DEPTH);
+            Glut.glutInitWindowSize(Width, Height);
+            window = Glut.glutCreateWindow("OpenGL Tutorial");
+        }
+        private void InitFunctionEvents()
+        {
+            // provide the Glut callbacks that are necessary for running this tutorial
+            Glut.glutIdleFunc(OnRenderFrame);
+            Glut.glutDisplayFunc(OnDisplay);
+            Glut.glutKeyboardFunc(OnKeyboardDown);
+            Glut.glutKeyboardUpFunc(OnKeyboardUp);
+            Glut.glutCloseFunc(OnClose);
+        }
+        private void InitProgram()
+        {
+            // compile the shader program
+            program = new ShaderProgram(VertexShader, FragmentShader);
+
+            // set the view and projection matrix, which are static throughout this tutorial
+            program.Use();
+            program["projection_matrix"].SetValue(Matrix4.CreatePerspectiveFieldOfView(0.45f, (float)Width / Height, 0.1f, 1000f));
+            program["view_matrix"].SetValue(Matrix4.LookAt(new Vector3(0, 0, 10), Vector3.Zero, Vector3.Up));
+            watch = System.Diagnostics.Stopwatch.StartNew();
+        }
+        private void InitGL()
+        {
+            InitWindow();
+            InitFunctionEvents();
+            InitProgram();
+
+            lstPlayerRenderContainer = new List<PlayerRenderContainer>();
+        }
+        #endregion
+
+        #region FunctionEvents
         private void OnRenderFrame()
         {
             // set up the OpenGL viewport and clear both the color and depth bits
-            Gl.Viewport(0, 0, width, height);
+            Gl.Viewport(0, 0, Width, Height);
             Gl.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             // use our shader program
@@ -201,8 +142,34 @@ namespace ClientApplication.Classes
 
             Glut.glutSwapBuffers();
         }
+        private void OnDisplay() { }
+        private void OnKeyboardDown(byte key, int x, int y)
+        {
+            if (key == 'w') up = true;
+            else if (key == 's') down = true;
+            else if (key == 'd') right = true;
+            else if (key == 'a') left = true;
+            else if (key == 27) Glut.glutLeaveMainLoop();
+        }
+        private void OnKeyboardUp(byte key, int x, int y)
+        {
+            if (key == 'w') up = false;
+            else if (key == 's') down = false;
+            else if (key == 'd') right = false;
+            else if (key == 'a') left = false;
+        }
+        private void OnClose()
+        {
+            Exit();
+            program.DisposeChildren = true;
+            program.Dispose();
+            foreach (var lst in lstPlayerRenderContainer)
+            {
+                lst.Dispose();
+            }
+            ClientConection.Close();
+        }
         #endregion
-
 
 
         public static readonly string VertexShader = @"
