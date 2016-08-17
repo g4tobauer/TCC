@@ -105,7 +105,8 @@ namespace ServerApplication.Classes.TCP
             var gameInstance = UdpState.GameInstance;
             if (gameInstance != null)
             {
-                var dicKey = UdpState.IPEndPoint.Address.ToString() + UdpState.IPEndPoint.Port + gameInstance.Player.PlayerName;
+                //var dicKey = UdpState.IPEndPoint.Address.ToString() + UdpState.IPEndPoint.Port + gameInstance.Player.PlayerName;
+                var dicKey = gameInstance.Player.PlayerName;
                 lock (_dicUdpState)
                 {
                     switch (gameInstance.opCode)

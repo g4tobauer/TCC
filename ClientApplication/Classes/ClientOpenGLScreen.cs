@@ -50,15 +50,17 @@ namespace ClientApplication.Classes
         {
             GameInstance = new GameInstance();
             GameInstance.Player = MakeQuadPlayer(playerName);
-            lstPlayerRenderContainer.Add(new PlayerRenderContainer(GameInstance.Player));
-            Join();
+            if (ClientConection.Join(GameInstance))
+                lstPlayerRenderContainer.Add(new PlayerRenderContainer(GameInstance.Player));                
+            //Join();
         }
         public void TrianglePlayer(string playerName)
         {
             GameInstance = new GameInstance();
             GameInstance.Player = MakeTrianglePlayer(playerName);
-            lstPlayerRenderContainer.Add(new PlayerRenderContainer(GameInstance.Player));
-            Join();
+            if(ClientConection.Join(GameInstance))
+                lstPlayerRenderContainer.Add(new PlayerRenderContainer(GameInstance.Player));
+            //Join();
         }
 
         public void Join()

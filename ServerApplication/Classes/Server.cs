@@ -1,6 +1,7 @@
 ﻿//using ClientApplication.Common;
 using CommonData;
 using Newtonsoft.Json;
+using ServerApplication.Classes.TCP;
 using ServerApplication.Classes.UDP;
 using System;
 using System.Collections.Generic;
@@ -45,13 +46,20 @@ namespace ServerApplication.Classes
             }
         }
 
+        private void teste()
+        {
+            new Thread(new TcpServer(ref _dicUdpState).Start).Start();
+        }
+
         #region PublicMethods
         public bool Start()
         {
             if (IsOK && !Receiver.IsRunning)
             {
                 StartThreads();
+                //teste();
                 return true;
+                //return true;
             }
             return false;
         }
@@ -65,6 +73,7 @@ namespace ServerApplication.Classes
         #region PrivateMethods
         private void StartThreads()
         {
+            teste();
             Thread ThreadReceive = new Thread(Receiver.BeginReceive);
             ThreadReceive.Start();
 
@@ -90,7 +99,8 @@ namespace ServerApplication.Classes
                         var gameInstance = UdpState.GameInstance;
                         if (gameInstance != null)
                         {
-                            var dicKey = UdpState.IPEndPoint.Address.ToString() + UdpState.IPEndPoint.Port + gameInstance.Player.PlayerName;
+                            //var dicKey = UdpState.IPEndPoint.Address.ToString() + UdpState.IPEndPoint.Port + gameInstance.Player.PlayerName;
+                            var dicKey = gameInstance.Player.PlayerName;
                             lock (_dicUdpState)
                             {
                                 switch (gameInstance.opCode)

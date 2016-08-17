@@ -60,6 +60,7 @@
     <Compile Include="Classes\Client.cs" />
     <Compile Include="Classes\ClientOpenGLScreen.cs" />
     <Compile Include="Classes\PlayerRenderContainer.cs" />
+    <Compile Include="Classes\TCP\TcpClientConnection.cs" />
     <Compile Include="Forms\ClientForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -82,6 +83,9 @@
       <Project>{25f5ca80-28b7-49c7-bc0a-948ea6f5ecd2}</Project>
       <Name>CommonData</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Classes\UDP\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

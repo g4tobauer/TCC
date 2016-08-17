@@ -74,7 +74,7 @@
             this.txt_ServerIp.Name = "txt_ServerIp";
             this.txt_ServerIp.Size = new System.Drawing.Size(535, 20);
             this.txt_ServerIp.TabIndex = 2;
-            this.txt_ServerIp.Text = "127.0.0.1";
+            this.txt_ServerIp.Text = "localhost";
             // 
             // lbl_ServerIp
             // 
