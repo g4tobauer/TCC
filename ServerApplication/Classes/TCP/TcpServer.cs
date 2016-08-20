@@ -26,12 +26,12 @@ namespace ServerApplication.Classes.TCP
             string output = string.Empty;
             // Create an instance of the TcpListener class.
             TcpListener tcpListener = null;
-            IPAddress ipAddress = Dns.GetHostEntry("localhost").AddressList[0];
+            //IPAddress ipAddress = Dns.GetHostEntry("localhost").AddressList[0];
             try
             {
                 // Set the listener on the local IP address 
                 // and specify the port.
-                tcpListener = new TcpListener(ipAddress, TCPPORT);
+                tcpListener = new TcpListener(IPAddress.Any, TCPPORT);
                 tcpListener.Start();
                 output = "Waiting for a connection...";
             }

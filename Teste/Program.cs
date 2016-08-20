@@ -19,7 +19,7 @@ namespace Teste
 
             Thread.Sleep(1000);
             Client cli = new Client();
-            cli.Connect("localhost", "porra");
+            cli.Connect("127.0.0.1", "porra");
         }        
     }
 }

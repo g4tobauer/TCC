@@ -22,7 +22,7 @@ namespace Teste.TCP
         {
             // Create an instance of the TcpListener class.
             TcpListener tcpListener = null;
-            IPAddress ipAddress = Dns.GetHostEntry("localhost").AddressList[0];
+            IPAddress ipAddress = Dns.GetHostEntry("localhost").AddressList[1];
             try
             {
                 // Set the listener on the local IP address 
