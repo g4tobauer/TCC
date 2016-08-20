@@ -78,8 +78,10 @@ namespace ClientApplication.Classes
             try
             {
                 IsConnected = false;
+                _clientOpenGLScreen.Close();
                 Thread.Sleep(100);
-                Socket.Close();
+                if (Socket != null)
+                    Socket.Close();
             }catch(Exception e)
             {
                 Console.WriteLine(e.Message);
@@ -116,6 +118,21 @@ namespace ClientApplication.Classes
             return TcpClientConnection.Exit(GameInstance);
         }
         #endregion
+
+
+        private ClientOpenGLScreen _clientOpenGLScreen;
+        public bool Create(GameInstance GameInstance)
+        {
+            new Thread(Receive).Start();
+            _clientOpenGLScreen = new ClientOpenGLScreen(this);
+            _clientOpenGLScreen.MakeGameInstance(GameInstance);
+            _clientOpenGLScreen.AddGameInstanceToList(GameInstance);
+            return true;
+        }
+        public void Start()
+        {
+            _clientOpenGLScreen.MainLoop();
+        }
 
     }
 }

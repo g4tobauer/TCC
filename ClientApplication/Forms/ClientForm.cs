@@ -18,7 +18,7 @@ namespace ClientApplication.Forms
         #region
         private Client Client;
         private GameInstance GameInstance;
-        private ClientOpenGLScreen _clientOpenGLScreen;
+        //private ClientOpenGLScreen _clientOpenGLScreen;
         private bool isCreated;
         private bool isPlayed;
         #endregion
@@ -37,9 +37,9 @@ namespace ClientApplication.Forms
 
         private void btn_Connect_Click(object sender, EventArgs e)
         {
-            Client = new Client();
             if (!isCreated)
             {
+                Client = new Client();
                 var playerName = txt_Name.Text;
                 var serverIp = txt_ServerIp.Text;
                 int serverPort, localSenderPort, receiverPort;
@@ -68,11 +68,13 @@ namespace ClientApplication.Forms
 
                             if (Client.Join(GameInstance))
                             {
-                                new Thread(Client.Receive).Start();
-                                _clientOpenGLScreen = new ClientOpenGLScreen(Client);
-                                _clientOpenGLScreen.MakeGameInstance(GameInstance);
-                                _clientOpenGLScreen.AddGameInstanceToList(GameInstance);
-                                isCreated = true;
+                                isCreated = Client.Create(GameInstance);
+
+                                //new Thread(Client.Receive).Start();
+                                //_clientOpenGLScreen = new ClientOpenGLScreen(Client);
+                                //_clientOpenGLScreen.MakeGameInstance(GameInstance);
+                                //_clientOpenGLScreen.AddGameInstanceToList(GameInstance);
+                                //isCreated = true;
                             }
                             else
                             {
@@ -84,7 +86,7 @@ namespace ClientApplication.Forms
                 }
                 if (isCreated && !isPlayed)
                 {
-                    _clientOpenGLScreen.MainLoop();
+                    Client.Start();
                     isPlayed = true;
                 }
             }
@@ -110,7 +112,7 @@ namespace ClientApplication.Forms
 
         private void btn_Disconnect_Click(object sender, EventArgs e)
         {
-            _clientOpenGLScreen.Close();
+            Client.Close();
         }
     }
 }
