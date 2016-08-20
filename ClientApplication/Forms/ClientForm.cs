@@ -18,7 +18,6 @@ namespace ClientApplication.Forms
         #region
         private Client Client;
         private GameInstance GameInstance;
-        //private ClientOpenGLScreen _clientOpenGLScreen;
         private bool isCreated;
         private bool isPlayed;
         #endregion
@@ -69,12 +68,6 @@ namespace ClientApplication.Forms
                             if (Client.Join(GameInstance))
                             {
                                 isCreated = Client.Create(GameInstance);
-
-                                //new Thread(Client.Receive).Start();
-                                //_clientOpenGLScreen = new ClientOpenGLScreen(Client);
-                                //_clientOpenGLScreen.MakeGameInstance(GameInstance);
-                                //_clientOpenGLScreen.AddGameInstanceToList(GameInstance);
-                                //isCreated = true;
                             }
                             else
                             {

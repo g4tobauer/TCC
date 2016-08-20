@@ -32,24 +32,25 @@ namespace ClientApplication.Classes
             ClientConection = Client;
             InitGL();
         }
-
-        #region prontos
+        
         public void MakeGameInstance(GameInstance GameInstance)
         {
             this.GameInstance = GameInstance;
         }
+
         public void AddGameInstanceToList(GameInstance GameInstance)
         {
             lstPlayerRenderContainer.Add(new PlayerRenderContainer(this.GameInstance.Player));
         }
+
         public void MainLoop()
         {
             _UpdateLoop = true;
             Glut.glutMainLoop();
         }
+
         public void Close()
         {
-            OnClose();
             Glut.glutDestroyWindow(window);
         }
 
@@ -57,8 +58,13 @@ namespace ClientApplication.Classes
         {
             GameInstance.opCode = Operation.Update;
             var json = JsonConvert.SerializeObject(GameInstance);
-            ClientConection.send(json);
+            ClientConection.Send(json);
         }
+        public void ReceiveUpdate(string msg)
+        {
+            Console.WriteLine(msg);
+        }
+
         private void Exit()
         {
             if (_UpdateLoop)
@@ -66,11 +72,9 @@ namespace ClientApplication.Classes
                 if (ClientConection.Exit(GameInstance))
                 {
                     _UpdateLoop = false;
-                    ClientConection.Close();
                 }
             }
         }
-        #endregion
 
         #region Initialization
         private void InitWindow()
@@ -167,7 +171,6 @@ namespace ClientApplication.Classes
             {
                 lst.Dispose();
             }
-            ClientConection.Close();
         }
         #endregion
 
