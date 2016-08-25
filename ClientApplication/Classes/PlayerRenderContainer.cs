@@ -37,10 +37,10 @@ namespace ClientApplication.Classes
                     InitVector = new Vector3(-1.5f, 0, 0);
                     break;
             }
-            Player.Position = InitVector;
+            MovePlayer(Player.Position);
         }
 
-        public void MovePlayer(Vector3 MoveVector)
+        private void MovePlayer(Vector3 MoveVector)
         {
             Player.Position = InitVector + MoveVector;
         }

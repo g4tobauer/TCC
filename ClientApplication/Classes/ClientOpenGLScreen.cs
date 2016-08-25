@@ -29,18 +29,15 @@ namespace ClientApplication.Classes
 
         public ClientOpenGLScreen(Client Client)
         {
+            str_Json = string.Empty;
             ClientConection = Client;
             InitGL();
         }
-        
+
         public void MakeGameInstance(GameInstance GameInstance)
         {
             this.GameInstance = GameInstance;
-        }
-
-        public void AddGameInstanceToList(GameInstance GameInstance)
-        {
-            lstPlayerRenderContainer.Add(new PlayerRenderContainer(this.GameInstance.Player));
+            //UpdatePlayerList(GameInstance.Player);
         }
 
         public void MainLoop()
@@ -60,10 +57,53 @@ namespace ClientApplication.Classes
             var json = JsonConvert.SerializeObject(GameInstance);
             ClientConection.Send(json);
         }
-        public void ReceiveUpdate(string msg)
+        public void ReceiveUpdate(string json)
         {
-            Console.WriteLine(msg);
+            BuildMap(json);
         }
+
+        #region TESTE
+
+        private void BuildMap(string json)
+        {
+            lock (str_Json)
+            {
+                str_Json = json;
+            }
+        }
+
+
+        private void UpdatePlayerList(Player Player)
+        {
+            lstPlayerRenderContainer.Add(new PlayerRenderContainer(Player));
+        }
+
+        private string str_Json;
+        private void teste()
+        {
+            clearBuffer();
+            Map map;
+            lock (str_Json)
+            {
+                map = JsonConvert.DeserializeObject<Map>(str_Json);
+            }
+            if (map != null)
+            {
+                foreach (var Player in map.PlayerList)
+                {
+                    UpdatePlayerList(Player);
+                }
+            }
+        }
+        private void clearBuffer()
+        {
+            foreach (var lst in lstPlayerRenderContainer)
+            {
+                lst.Dispose();
+            }
+            lstPlayerRenderContainer.Clear();
+        }
+        #endregion
 
         private void Exit()
         {
@@ -118,6 +158,7 @@ namespace ClientApplication.Classes
         #region FunctionEvents
         private void OnRenderFrame()
         {
+            teste();
             // set up the OpenGL viewport and clear both the color and depth bits
             Gl.Viewport(0, 0, Width, Height);
             Gl.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
@@ -127,7 +168,7 @@ namespace ClientApplication.Classes
 
             foreach (var lst in lstPlayerRenderContainer)
             {
-                lst.MovePlayer(new Vector3(x, y, 0));
+                //lst.MovePlayer(new Vector3(x, y, 0));
                 lst.Render(program);
             }
 
@@ -167,10 +208,7 @@ namespace ClientApplication.Classes
             Exit();
             program.DisposeChildren = true;
             program.Dispose();
-            foreach (var lst in lstPlayerRenderContainer)
-            {
-                lst.Dispose();
-            }
+            clearBuffer();
         }
         #endregion
 

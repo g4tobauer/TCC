@@ -36,7 +36,7 @@ namespace ClientApplication.Classes
             CreateTcpConnection();
             CreateReceiverConnection();
         }
-        
+
         public void Close()
         {
             try
@@ -46,7 +46,8 @@ namespace ClientApplication.Classes
                 Thread.Sleep(100);
                 if (MulticastSocket != null)
                     MulticastSocket.Close();
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 Console.WriteLine(e.Message);
             }
@@ -71,7 +72,7 @@ namespace ClientApplication.Classes
                 MulticastSocket.Receive(b);
                 string str = Encoding.ASCII.GetString(b, 0, b.Length);
                 str = str.Trim('\0');
-                if(Game != null)
+                if (Game != null)
                     Game.ReceiveUpdate(str);
             }
         }
@@ -114,7 +115,6 @@ namespace ClientApplication.Classes
             new Thread(Receive).Start();
             Game = new ClientOpenGLScreen(this);
             Game.MakeGameInstance(GameInstance);
-            Game.AddGameInstanceToList(GameInstance);
             return true;
         }
         public void Start()
