@@ -15,17 +15,26 @@ namespace ServerApplication.Classes.TCP
     {
         private Dictionary<string, UdpState> _dicUdpState;
         private static int TCPPORT = 10000;
+        private bool IsRunning;
+        private TcpListener tcpListener = null;
 
         public TcpServer(ref Dictionary<string, UdpState> dicUdpState)
         {
             _dicUdpState = dicUdpState;
         }
 
+
+        public void Stop()
+        {
+            IsRunning = false;
+            Thread.Sleep(100);
+            tcpListener.Stop();
+        }        
+
         public void Start()
         {
             string output = string.Empty;
             // Create an instance of the TcpListener class.
-            TcpListener tcpListener = null;
             //IPAddress ipAddress = Dns.GetHostEntry("localhost").AddressList[0];
             try
             {
@@ -34,6 +43,7 @@ namespace ServerApplication.Classes.TCP
                 tcpListener = new TcpListener(IPAddress.Any, TCPPORT);
                 tcpListener.Start();
                 output = "Waiting for a connection...";
+                IsRunning = true;
             }
             catch (Exception e)
             {
@@ -41,9 +51,7 @@ namespace ServerApplication.Classes.TCP
                 Console.WriteLine(output);
             }
 
-
-
-            while (true)
+            while (IsRunning)
             {
                 // Always use a Sleep call in a while(true) loop 
                 // to avoid locking up your CPU.
@@ -54,7 +62,11 @@ namespace ServerApplication.Classes.TCP
                 // for greater flexibility.
 
                 ConnectionBuilder Builder = new ConnectionBuilder(ref _dicUdpState);
-                new Thread(Builder.AcceptConnection(tcpListener.AcceptTcpClient()).Run).Start();
+                try
+                {
+                    new Thread(Builder.AcceptConnection(tcpListener.AcceptTcpClient()).Run).Start();
+                }
+                catch (Exception) { }
             }
         }
     }

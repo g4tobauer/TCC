@@ -37,18 +37,15 @@ namespace ServerApplication.Classes
             if (ServerForm.ServerPort(out serverPort))
             {
                 _lstUdpState = new List<UdpState>();
+                _dicUdpState = new Dictionary<string, UdpState>();
+
+                TcpServerConnection = new TcpServer(ref _dicUdpState);
                 Receiver = new UdpReceive(ref _lstUdpState, new IPEndPoint(IPAddress.Any, serverPort));
                 Sender = new MulticastSender();
 
-                _dicUdpState = new Dictionary<string, UdpState>();
                 _map = new Map();
                 IsOK = true;
             }
-        }
-
-        private void teste()
-        {
-            new Thread(new TcpServer(ref _dicUdpState).Start).Start();
         }
 
         #region PublicMethods
@@ -57,33 +54,58 @@ namespace ServerApplication.Classes
             if (IsOK && !Receiver.IsRunning)
             {
                 StartThreads();
-                //teste();
                 return true;
-                //return true;
             }
             return false;
         }
         public void ShutDown()
         {
             if (IsOK && Receiver.IsRunning)
+            {
+                TcpServerConnection.Stop();
+                Sender.Stop();
+
                 Receiver.EndReceive();
+                ThreadReceive.Abort();
+                ThreadUpdateUdpState.Abort();
+                ThreadUpdateList.Abort();
+                ThreadSend.Abort();
+                ThreadTcp.Abort();
+
+                ThreadReceive = null;
+                ThreadUpdateUdpState = null;
+                ThreadUpdateList = null;
+                ThreadSend = null;
+                ThreadTcp = null;
+            }
         }
         #endregion
 
         #region PrivateMethods
+
+        Thread ThreadReceive;
+        Thread ThreadUpdateUdpState;
+        Thread ThreadUpdateList;
+        Thread ThreadSend;
+        Thread ThreadTcp;
+
+        TcpServer TcpServerConnection;
+
         private void StartThreads()
         {
-            teste();
-            Thread ThreadReceive = new Thread(Receiver.BeginReceive);
+            ThreadTcp = new Thread(TcpServerConnection.Start);
+            ThreadTcp.Start();
+
+            ThreadReceive = new Thread(Receiver.BeginReceive);
             ThreadReceive.Start();
 
-            Thread ThreadUpdateUdpState = new Thread(UpdateUdpState);
+            ThreadUpdateUdpState = new Thread(UpdateUdpState);
             ThreadUpdateUdpState.Start();
             
-            Thread ThreadUpdateList = new Thread(UpdateList);
+            ThreadUpdateList = new Thread(UpdateList);
             ThreadUpdateList.Start();
 
-            Thread ThreadSend = new Thread(Sender.Run);
+            ThreadSend = new Thread(Sender.Run);
             ThreadSend.Start();
         }
 
@@ -149,6 +171,7 @@ namespace ServerApplication.Classes
                 if (_map.PlayerList.Count != 0)
                 {
                     json = JsonConvert.SerializeObject(_map);
+                    ServerForm.DefiniTexto(json);
                 }
 
                 lock (Sender.Message)
